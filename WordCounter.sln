@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{537296
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7676A2E4-D0E8-4A7B-A3E4-F15B4497A1EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCounterCLITests", "WordCounterCLITests\WordCounterCLITests.csproj", "{6082BA4B-B02A-4F6D-905B-F672F41318EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,11 +44,16 @@ Global
 		{91C58D24-6C98-4245-840E-F0C0872AF048}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91C58D24-6C98-4245-840E-F0C0872AF048}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91C58D24-6C98-4245-840E-F0C0872AF048}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6082BA4B-B02A-4F6D-905B-F672F41318EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6082BA4B-B02A-4F6D-905B-F672F41318EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6082BA4B-B02A-4F6D-905B-F672F41318EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6082BA4B-B02A-4F6D-905B-F672F41318EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{91C58D24-6C98-4245-840E-F0C0872AF048} = {20493906-5A7E-4637-AC79-9D1A8B390D8E}
+		{6082BA4B-B02A-4F6D-905B-F672F41318EF} = {20493906-5A7E-4637-AC79-9D1A8B390D8E}
 	EndGlobalSection
 EndGlobal

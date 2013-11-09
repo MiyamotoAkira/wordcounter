@@ -1,7 +1,7 @@
 ﻿namespace WordCounterCore
 {
   /// <summary>
-  /// Naive word counter. Uses spaces as separator. 
+  /// Naive splitter of words. Uses spaces as separator. 
   /// </summary>
   public class BasicSplit : ISplitStrategy
   {

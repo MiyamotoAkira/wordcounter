@@ -9,25 +9,25 @@ namespace WordCounterCore
   public class WordCounter
   {
     private ISplitStrategy strategy;
-    private IDictionary<string, int> results;
+    private WordCounterInformation results;
 
     public WordCounter(ISplitStrategy strategy)
     {
       this.strategy = strategy;
     }
 
-    public IDictionary<string, int> CountWordsOnText(string text)
+    public WordCounterInformation CountWordsOnText(string text)
     {
-      this.results = new Dictionary<string, int>();
+      this.results = new WordCounterInformation();
 
       this.CountWordsOnSingleLine(text);
 
       return results;
     }
 
-    public IDictionary<string, int> CountWordsOnStreamText(StreamReader reader)
+    public WordCounterInformation CountWordsOnStreamText(StreamReader reader)
     {
-      this.results = new Dictionary<string, int>();
+      this.results = new WordCounterInformation();
       String line;
       while ((line = reader.ReadLine()) != null)
       {
@@ -46,24 +46,9 @@ namespace WordCounterCore
 
       string[] operands = this.strategy.SplitText(text);
 
-      operands.ToList().ForEach(this.AddToDictionary);
+      operands.ToList().ForEach(this.results.Add);
     }
 
-    private void AddToDictionary(string operand)
-    {
-      if (String.IsNullOrWhiteSpace(operand))
-      {
-        return;
-      }
 
-      if (results.ContainsKey(operand))
-      {
-        this.results[operand]++;
-      }
-      else
-      {
-        this.results.Add(operand, 1);
-      }
-    }
   }
 }

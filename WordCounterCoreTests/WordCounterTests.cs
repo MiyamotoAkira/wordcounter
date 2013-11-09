@@ -20,7 +20,7 @@ namespace WordCounterCoreTests
     public void CountWords_ValidStringNoPunctuationBasicStrategy_CorrectCount()
     {
       WordCounter wordCounter = new WordCounter(new BasicSplit());
-      IDictionary<string, int> results = wordCounter.CountWordsOnText("Go do that thing that you do so well");
+      WordCounterInformation results = wordCounter.CountWordsOnText("Go do that thing that you do so well");
       CheckBasicGoLine(results);
     }
 
@@ -28,7 +28,7 @@ namespace WordCounterCoreTests
     public void CountWords_ValidStringNoPunctuationComplexStrategy_CorrectCount()
     {
       WordCounter wordCounter = new WordCounter(new ComplexSplit());
-      IDictionary<string, int> results = wordCounter.CountWordsOnText("Go do that thing that you do so well");
+      WordCounterInformation results = wordCounter.CountWordsOnText("Go do that thing that you do so well");
       CheckBasicGoLine(results);
     }
 
@@ -36,16 +36,16 @@ namespace WordCounterCoreTests
     public void CountWords_ValidStringWithPunctuationBasicStrategy_CountsWordWithPunctuationAsDifferent()
     {
       WordCounter wordCounter = new WordCounter(new BasicSplit());
-      IDictionary<string, int> results = wordCounter.CountWordsOnText("Go do, that thing that you do so well");
+      WordCounterInformation results = wordCounter.CountWordsOnText("Go do, that thing that you do so well");
       results.Count.Should().Be(8);
-      results.Keys.Contains("Go").Should().BeTrue();
-      results.Keys.Contains("do").Should().BeTrue();
-      results.Keys.Contains("do,").Should().BeTrue();
-      results.Keys.Contains("that").Should().BeTrue();
-      results.Keys.Contains("thing").Should().BeTrue();
-      results.Keys.Contains("you").Should().BeTrue();
-      results.Keys.Contains("so").Should().BeTrue();
-      results.Keys.Contains("well").Should().BeTrue();
+      results.ContainsWord("Go").Should().BeTrue();
+      results.ContainsWord("do").Should().BeTrue();
+      results.ContainsWord("do,").Should().BeTrue();
+      results.ContainsWord("that").Should().BeTrue();
+      results.ContainsWord("thing").Should().BeTrue();
+      results.ContainsWord("you").Should().BeTrue();
+      results.ContainsWord("so").Should().BeTrue();
+      results.ContainsWord("well").Should().BeTrue();
       results["Go"].Should().Be(1);
       results["do"].Should().Be(1);
       results["do,"].Should().Be(1);
@@ -60,20 +60,20 @@ namespace WordCounterCoreTests
     public void CountWords_ValidStringWithPunctuationComplexStrategy_IgnoresPunctuationCorrectNumberOfWordsReturned()
     {
       WordCounter wordCounter = new WordCounter(new ComplexSplit());
-      IDictionary<string, int> results = wordCounter.CountWordsOnText("Go do, that thing that. you do so well?");
+      WordCounterInformation results = wordCounter.CountWordsOnText("Go do, that thing that. you do so well?");
       CheckBasicGoLine(results);
     }
 
-    private void CheckBasicGoLine(IDictionary<string, int> results)
+    private void CheckBasicGoLine(WordCounterInformation results)
     {
       results.Count.Should().Be(7);
-      results.Keys.Contains("Go").Should().BeTrue();
-      results.Keys.Contains("do").Should().BeTrue();
-      results.Keys.Contains("that").Should().BeTrue();
-      results.Keys.Contains("thing").Should().BeTrue();
-      results.Keys.Contains("you").Should().BeTrue();
-      results.Keys.Contains("so").Should().BeTrue();
-      results.Keys.Contains("well").Should().BeTrue();
+      results.ContainsWord("Go").Should().BeTrue();
+      results.ContainsWord("do").Should().BeTrue();
+      results.ContainsWord("that").Should().BeTrue();
+      results.ContainsWord("thing").Should().BeTrue();
+      results.ContainsWord("you").Should().BeTrue();
+      results.ContainsWord("so").Should().BeTrue();
+      results.ContainsWord("well").Should().BeTrue();
       results["Go"].Should().Be(1);
       results["do"].Should().Be(2);
       results["that"].Should().Be(2);
@@ -88,8 +88,8 @@ namespace WordCounterCoreTests
     {
       ISplitStrategy strategy = Substitute.For<ISplitStrategy>();
       WordCounter wordCounter = new WordCounter(strategy);
-      IDictionary<string, int> results = wordCounter.CountWordsOnText(null);
-      results.Count.Should().Be(0);
+      WordCounterInformation results = wordCounter.CountWordsOnText(null);
+      results.TotalWords.Should().Be(0);
     }
 
     [Test]
@@ -97,8 +97,8 @@ namespace WordCounterCoreTests
     {
       ISplitStrategy strategy = Substitute.For<ISplitStrategy>();
       WordCounter wordCounter = new WordCounter(strategy);
-      IDictionary<string, int> results = wordCounter.CountWordsOnText(String.Empty);
-      results.Count.Should().Be(0);
+      WordCounterInformation results = wordCounter.CountWordsOnText(String.Empty);
+      results.TotalWords.Should().Be(0);
     }
 
     [Test]
@@ -107,26 +107,26 @@ namespace WordCounterCoreTests
     {
       WordCounter wordCounter = new WordCounter(new ComplexSplit());
       Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WordCounterCoreTests.InputFiles.TextMultipleLines.txt");
-      IDictionary<string, int> results = wordCounter.CountWordsOnStreamText(new StreamReader(stream));
+      WordCounterInformation results = wordCounter.CountWordsOnStreamText(new StreamReader(stream));
 
       results.Count.Should().Be(17);
-      results.Keys.Contains("Some").Should().BeTrue();
-      results.Keys.Contains("text").Should().BeTrue();
-      results.Keys.Contains("With").Should().BeTrue();
-      results.Keys.Contains("a").Should().BeTrue();
-      results.Keys.Contains("few").Should().BeTrue();
-      results.Keys.Contains("lines").Should().BeTrue();
-      results.Keys.Contains("or").Should().BeTrue();
-      results.Keys.Contains("more").Should().BeTrue();
-      results.Keys.Contains("And").Should().BeTrue();
-      results.Keys.Contains("punctuactions").Should().BeTrue();
-      results.Keys.Contains("signs").Should().BeTrue();
-      results.Keys.Contains("Yes").Should().BeTrue();
-      results.Keys.Contains("as").Should().BeTrue();
-      results.Keys.Contains("well").Should().BeTrue();
-      results.Keys.Contains("Just").Should().BeTrue();
-      results.Keys.Contains("to").Should().BeTrue();
-      results.Keys.Contains("test").Should().BeTrue();
+      results.ContainsWord("Some").Should().BeTrue();
+      results.ContainsWord("text").Should().BeTrue();
+      results.ContainsWord("With").Should().BeTrue();
+      results.ContainsWord("a").Should().BeTrue();
+      results.ContainsWord("few").Should().BeTrue();
+      results.ContainsWord("lines").Should().BeTrue();
+      results.ContainsWord("or").Should().BeTrue();
+      results.ContainsWord("more").Should().BeTrue();
+      results.ContainsWord("And").Should().BeTrue();
+      results.ContainsWord("punctuactions").Should().BeTrue();
+      results.ContainsWord("signs").Should().BeTrue();
+      results.ContainsWord("Yes").Should().BeTrue();
+      results.ContainsWord("as").Should().BeTrue();
+      results.ContainsWord("well").Should().BeTrue();
+      results.ContainsWord("Just").Should().BeTrue();
+      results.ContainsWord("to").Should().BeTrue();
+      results.ContainsWord("test").Should().BeTrue();
       results["Some"].Should().Be(1);
       results["text"].Should().Be(1);
       results["With"].Should().Be(1);
