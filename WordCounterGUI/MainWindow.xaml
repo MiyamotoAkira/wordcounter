@@ -2,7 +2,40 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+    <Window.InputBindings>
+        <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding ExitCommand}"/>
+        <KeyBinding Key="A" Modifiers="Control" Command="{Binding AnalyzeCommand}"/>
+        <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenResults}"/>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveResults}"/>
+    </Window.InputBindings>
+    <StackPanel>
+        <Menu Name="MainMenu">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Analyze File" Command="{Binding AnalyzeCommand}" InputGestureText="Ctrl+A"/>
+                <MenuItem Header="_Compare Files" Command="{Binding CompareCommand}"/>
+                <Separator/>
+                <MenuItem Header=" _Open Results" Command="{Binding OpenResults}" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="_Save Results" Command="{Binding SaveResults}" InputGestureText="Ctrl+S"/>
+                <Separator/>
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}" InputGestureText="Alt+F4"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Name="SourceFileColumn" Width="{Binding SourceFileColumnWidth}"></ColumnDefinition>
+                <ColumnDefinition Name="CompareFileColumn" Width="{Binding CompareFileColumnWidth}"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox 
+                Name="SourceFile" 
+                Text="{Binding SourceFileResults}" 
+                Grid.Column="0" 
+                Visibility="{Binding SourceFileVisible}" 
+                Width="{Binding ElementName=SourceFileColumn, Path=Width}"/>
+            <TextBox 
+                Name="FileToCompare" 
+                Text="{Binding CompareFileResults}" 
+                Grid.Column="1" Visibility="{Binding CompareFileVisible}"
+                Width="{Binding ElementName=CompareFileColumn, Path=Width}"/>
+        </Grid>
+    </StackPanel>
 </Window>

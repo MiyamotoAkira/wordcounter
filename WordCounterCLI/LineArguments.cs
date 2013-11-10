@@ -7,15 +7,41 @@ namespace WordCounterCLI
   using System.Text;
   using System.Threading.Tasks;
 
-  public class LineArguments
+  public class LineArguments : ILineArguments
   {
+    #region Properties
+    /// <summary>
+    /// Gets the path of the file for which we want to count the words.
+    /// </summary>
     public string SourceFile { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether we want to compare the file to another file
+    /// </summary>
     public bool CompareTo { get; private set; }
+
+    /// <summary>
+    /// Gets the path of the file to which we want to compare
+    /// </summary>
     public string SourceFileToCompare { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether we want to write the output to a file or not.
+    /// </summary>
     public bool ThereIsFileOutput { get; private set; }
+
+    /// <summary>
+    /// Gets the path of the file where we want to output the results.
+    /// </summary>
     public string DestinationPath { get; private set; }
+    #endregion
 
-
+    #region Methods
+    /// <summary>
+    /// Parses the arguments to fill the possible options.
+    /// </summary>
+    /// <param name="arguments">The arguments that we want to parse.</param>
+    /// <returns>True if the parsing finished correctly. False if there is any issue with the arguments passed.</returns>
     public bool Parse(string[] arguments)
     {
       if (arguments == null || arguments.Length == 0)
@@ -82,6 +108,6 @@ namespace WordCounterCLI
     {
       return arguments[argumentIndex].StartsWith("/");
     }
-
+    #endregion
   }
 }

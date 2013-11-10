@@ -4,6 +4,7 @@ namespace WordCounterCore
   using System;
   using System.Collections;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
   using System.Text;
   using System.Threading.Tasks;
@@ -13,27 +14,6 @@ namespace WordCounterCore
 
   public class WordCounterInformation : IComparable, IComparable<WordCounterInformation>, ICollection
   {
-    ////    static JsonSchema schema = JsonSchema.Parse(@"{
-    ////  'type': 'object',
-    ////  'properties': {
-    ////    'name': {'type':'string'},
-    ////    'hobbies': {'type': 'array'}
-    ////  }
-    ////}");
-
-    ////    string schemaJson = @"{
-    //// 2  'description': 'WordCounter',
-    //// 3  'type': 'object',
-    //// 4  'properties':
-    //// 5  {
-    //// 6    'name': {'type':'string'},
-    //// 7    'CountedWords': {
-    //// 8      'type': 'array',
-    //// 9      'word': {'type':'string'}
-    ////        'counter':
-    ////10    }
-    ////11  }
-    ////12}";
     #region Member Variables
     private SortedDictionary<string, int> countedWords;
     #endregion
@@ -59,45 +39,51 @@ namespace WordCounterCore
     }
     #endregion
 
-    ////public static bool ValidateAgainstSchema(String textToValidate)
-    ////{
-    ////  JsonSchemaType.Array
-
-    ////  JObject possibleCountedWord = JObject.Parse(textToValidate);
-
-    ////  bool valid = possibleCountedWord.IsValid(schema);
-    ////}
-
     #region Methods
     public static WordCounterInformation DeSerializeFromString(String serializedObject)
     {
       return JsonConvert.DeserializeObject<WordCounterInformation>(serializedObject);
     }
 
+    /// <summary>
+    /// Converts the object into Json format
+    /// </summary>
+    /// <returns>The text that represents the object in Json format.</returns>
     public string SerializeToString()
     {
       return JsonConvert.SerializeObject(this);
     }
 
+    /// <summary>
+    /// Serializes the object into a file in Json format.
+    /// </summary>
+    /// <param name="filePathAndName">The full path to the file that where we want to serialize the object.</param>
     public void SerializeToFile(String filePathAndName)
     {
-
+      using (TextWriter writer = new StreamWriter(filePathAndName))
+      {
+        writer.WriteLine(this.SerializeToString());
+      }
     }
 
-    public void Add(string operand)
+    /// <summary>
+    /// Adds a word to the collection
+    /// </summary>
+    /// <param name="wordToAdd">The word that we want to add.</param>
+    public void Add(string wordToAdd)
     {
-      if (String.IsNullOrWhiteSpace(operand))
+      if (String.IsNullOrWhiteSpace(wordToAdd))
       {
         return;
       }
 
-      if (this.countedWords.ContainsKey(operand))
+      if (this.countedWords.ContainsKey(wordToAdd))
       {
-        this.countedWords[operand]++;
+        this.countedWords[wordToAdd]++;
       }
       else
       {
-        this.countedWords.Add(operand, 1);
+        this.countedWords.Add(wordToAdd, 1);
       }
     }
 
