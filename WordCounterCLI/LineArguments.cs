@@ -1,11 +1,7 @@
 ﻿
 namespace WordCounterCLI
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-  using System.Threading.Tasks;
+  using Extensions;
 
   public class LineArguments : ILineArguments
   {
@@ -44,7 +40,7 @@ namespace WordCounterCLI
     /// <returns>True if the parsing finished correctly. False if there is any issue with the arguments passed.</returns>
     public bool Parse(string[] arguments)
     {
-      if (arguments == null || arguments.Length == 0)
+      if (arguments.IsNullOrEmpty())
       {
         return false;
       }

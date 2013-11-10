@@ -7,10 +7,10 @@ namespace WordCounterCore
   using System.IO;
   using System.Linq;
   using System.Text;
-  using System.Threading.Tasks;
+
+  using Extensions;
+
   using Newtonsoft.Json;
-  using Newtonsoft.Json.Linq;
-  using Newtonsoft.Json.Schema;
 
   [JsonObject(MemberSerialization.OptIn)]
   public class WordCounterInformation : IComparable, IComparable<WordCounterInformation>, IEnumerable
@@ -47,9 +47,9 @@ namespace WordCounterCore
     {
       get
       {
-        return this.countedWords != null && this.countedWords.Count > 0
-          ? this.countedWords.Values.ToList().Aggregate((total, value) => total += value)
-          : 0;
+        return this.countedWords.IsNullOrEmpty()
+          ? 0
+          : this.countedWords.Values.ToList().Aggregate((total, value) => total += value);
       }
     }
     #endregion

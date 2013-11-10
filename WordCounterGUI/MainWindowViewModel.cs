@@ -50,6 +50,10 @@ namespace WordCounterGUI
     public event PropertyChangedEventHandler PropertyChanged;
     #endregion
 
+    #region Delegate
+    public delegate void UpdateFileResults(string textForUpdate);
+    #endregion
+
     #region Properties
     public ICommand ExitCommand
     {
@@ -203,14 +207,6 @@ namespace WordCounterGUI
         this.ModifyCompareFileVisibility();
       }
     }
-
-    /// <summary>
-    ///   Gets a value indicating whether [data changed].
-    /// </summary>
-    /// <value>
-    ///   <c>true</c> if [data changed]; otherwise, <c>false</c>.
-    /// </value>
-    public Boolean DataChanged { get; private set; }
     #endregion
 
 
@@ -220,40 +216,33 @@ namespace WordCounterGUI
       Application.Current.Shutdown();
     }
 
-    private void OnAnalyzeCommand()
+    public void OnAnalyzeCommand()
     {
       string fileToAnalyze = this.openDialog.ChooseFile("File To Analyze");
-      if (!string.IsNullOrWhiteSpace(fileToAnalyze))
-      {
-        WordCounter wordCounter = new WordCounter(new ComplexSplit());
-        StreamReader reader = new StreamReader(fileToAnalyze);
-        this.resultsSourceFile = wordCounter.CountWordsOnStreamText(reader);
-        this.SourceFileResults = this.resultsSourceFile.ToString();
-      }
+      Create(fileToAnalyze,  ref this.resultsSourceFile, (textToUpdate) => this.SourceFileResults = textToUpdate);
     }
 
-    private void OnCompareCommand()
+    public void Create(String fileToAnalyze, ref WordCounterInformation informationToUpdate, UpdateFileResults update)
     {
-      string fileToAnalyze = this.openDialog.ChooseFile("File To Analyze");
       if (!string.IsNullOrWhiteSpace(fileToAnalyze))
       {
         WordCounter wordCounter = new WordCounter(new ComplexSplit());
         StreamReader reader = new StreamReader(fileToAnalyze);
-        this.resultsSourceFile = wordCounter.CountWordsOnStreamText(reader);
-        this.SourceFileResults = this.resultsSourceFile.ToString();
-      }
+        informationToUpdate = wordCounter.CountWordsOnStreamText(reader);
+        update(informationToUpdate.ToString());
+      }    
+    }
+
+    public void OnCompareCommand()
+    {
+      string fileToAnalyze = this.openDialog.ChooseFile("File To Analyze");
+      this.Create(fileToAnalyze, ref this.resultsSourceFile, (textToUpdate) => this.SourceFileResults = textToUpdate);
 
       fileToAnalyze = this.openDialog.ChooseFile("File To Compare To");
-      if (!string.IsNullOrWhiteSpace(fileToAnalyze))
-      {
-        WordCounter wordCounter = new WordCounter(new ComplexSplit());
-        StreamReader reader = new StreamReader(fileToAnalyze);
-        this.resultsCompareFile = wordCounter.CountWordsOnStreamText(reader);
-        this.CompareFileResults = this.resultsCompareFile.ToString();
-      }
+      this.Create(fileToAnalyze, ref this.resultsCompareFile, (textToUpdate) => this.CompareFileResults = textToUpdate);
     }
 
-    private void OnSaveResultsCommand()
+    public void OnSaveResultsCommand()
     {
       string saveFileName = this.saveDialog.ChooseFile("Save results", JsonExtension, JsonFilter);
       if (!string.IsNullOrWhiteSpace(saveFileName))
@@ -262,7 +251,7 @@ namespace WordCounterGUI
       }
     }
 
-    private void OnOpenResultsCommand()
+    public void OnOpenResultsCommand()
     {
       string fileToAnalyze = this.openDialog.ChooseFile("Open Results", JsonExtension, JsonFilter);
       if (!string.IsNullOrWhiteSpace(fileToAnalyze))
@@ -284,19 +273,6 @@ namespace WordCounterGUI
     {
       String propertyName = (property.Body as MemberExpression).Member.Name;
 
-      if (this.PropertyChanged != null)
-      {
-        this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        this.DataChanged = true;
-      }
-    }
-
-    /// <summary>
-    /// Invokes the event property changed.
-    /// </summary>
-    /// <param name="propertyName"> The property for which we want to specify we have made a change. </param>
-    private void RaisePropertyChanged(String propertyName)
-    {
       if (this.PropertyChanged != null)
       {
         this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
