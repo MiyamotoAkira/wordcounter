@@ -12,9 +12,14 @@ namespace WordCounterCore
   using Newtonsoft.Json.Linq;
   using Newtonsoft.Json.Schema;
 
-  public class WordCounterInformation : IComparable, IComparable<WordCounterInformation>, ICollection
+  [JsonObject(MemberSerialization.OptIn)]
+  public class WordCounterInformation : IComparable, IComparable<WordCounterInformation>, IEnumerable
   {
     #region Member Variables
+    [JsonProperty]
+    private string fileName;
+
+    [JsonProperty]
     private SortedDictionary<string, int> countedWords;
     #endregion
 
@@ -26,7 +31,17 @@ namespace WordCounterCore
     #endregion
 
     #region properties
-    public string FileName { get; set; }
+    public string FileName
+    {
+      get
+      {
+        return this.fileName;
+      }
+      set
+      {
+        this.fileName = value;
+      }
+    }
 
     public int TotalWords
     {
@@ -40,7 +55,19 @@ namespace WordCounterCore
     #endregion
 
     #region Methods
-    public static WordCounterInformation DeSerializeFromString(String serializedObject)
+    public static WordCounterInformation DeSerializeFromReader(StreamReader reader)
+    {
+      StringBuilder serializedObject = new StringBuilder();
+      String line;
+      while ((line = reader.ReadLine()) != null)
+      {
+        serializedObject.Append(line);
+      }
+
+      return WordCounterInformation.DeSerializeFromString(serializedObject.ToString());
+    }
+
+    public static WordCounterInformation DeSerializeFromString(string serializedObject)
     {
       return JsonConvert.DeserializeObject<WordCounterInformation>(serializedObject);
     }
@@ -58,7 +85,7 @@ namespace WordCounterCore
     /// Serializes the object into a file in Json format.
     /// </summary>
     /// <param name="filePathAndName">The full path to the file that where we want to serialize the object.</param>
-    public void SerializeToFile(String filePathAndName)
+    public void SerializeToFile(string filePathAndName)
     {
       using (TextWriter writer = new StreamWriter(filePathAndName))
       {
@@ -196,11 +223,6 @@ namespace WordCounterCore
       return builder.ToString();
     }
 
-    public void CopyTo(Array array, int index)
-    {
-      throw new NotImplementedException();
-    }
-
     public int Count
     {
       get
@@ -208,23 +230,6 @@ namespace WordCounterCore
         return this.countedWords.Count;
       }
     }
-
-    public bool IsSynchronized
-    {
-      get
-      {
-        return false;
-      }
-    }
-
-    public object SyncRoot
-    {
-      get
-      {
-        return null;
-      }
-    }
-
     #endregion
   }
 }

@@ -2,24 +2,23 @@
 namespace WordCounterGUI
 {
   using System;
-  using System.Collections.Generic;
   using System.ComponentModel;
   using System.IO;
-  using System.Linq;
   using System.Linq.Expressions;
-  using System.Text;
-  using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Input;
-  using Microsoft.Win32;
   using WordCounterCore;
 
   public class MainWindowViewModel : INotifyPropertyChanged
   {
     #region Member Variables
+    private const string JsonExtension = ".json";
+    private const string JsonFilter = "Json Files (.json)|*.json";
     private ICommand exitCommand;
     private ICommand analyzeCommand;
     private ICommand saveResults;
+    private ICommand openResults;
+    private ICommand compareCommand;
     private string sourceFileResults;
     private string compareFileResults;
     private Visibility sourceFileVisible;
@@ -27,13 +26,23 @@ namespace WordCounterGUI
     private GridLength sourceFileColumnWidth;
     private GridLength compareFileColumnWidth;
     private WordCounterInformation resultsSourceFile;
+    private WordCounterInformation resultsCompareFile;
+    private IDialog openDialog;
+    private IDialog saveDialog;
     #endregion
 
     #region Constructors
     public MainWindowViewModel()
+      : this(new OpenDialog(), new SaveDialog())
+    {
+    }
+
+    public MainWindowViewModel(IDialog openDialog, IDialog saveDialog)
     {
       this.SourceFileVisible = Visibility.Collapsed;
       this.CompareFileVisible = Visibility.Collapsed;
+      this.openDialog = openDialog;
+      this.saveDialog = saveDialog;
     }
     #endregion
 
@@ -68,6 +77,19 @@ namespace WordCounterGUI
       }
     }
 
+    public ICommand CompareCommand
+    {
+      get
+      {
+        if (this.compareCommand == null)
+        {
+          this.compareCommand = new RelayCommand<String>(param => this.OnCompareCommand());
+        }
+
+        return this.compareCommand;
+      }
+    }
+
     public ICommand SaveResults
     {
       get
@@ -78,6 +100,19 @@ namespace WordCounterGUI
         }
 
         return this.saveResults;
+      }
+    }
+
+    public ICommand OpenResults
+    {
+      get
+      {
+        if (this.openResults == null)
+        {
+          this.openResults = new RelayCommand<String>(param => this.OnOpenResultsCommand());
+        }
+
+        return this.openResults;
       }
     }
 
@@ -126,7 +161,7 @@ namespace WordCounterGUI
     }
 
     public GridLength CompareFileColumnWidth
-      {
+    {
       get
       {
         return this.compareFileColumnWidth;
@@ -178,6 +213,7 @@ namespace WordCounterGUI
     public Boolean DataChanged { get; private set; }
     #endregion
 
+
     #region Methods
     private void OnExitCommand()
     {
@@ -186,9 +222,7 @@ namespace WordCounterGUI
 
     private void OnAnalyzeCommand()
     {
-      OpenFileDialog dialog = new OpenFileDialog();
-      dialog.ShowDialog();
-      string fileToAnalyze = dialog.FileName;
+      string fileToAnalyze = this.openDialog.ChooseFile("File To Analyze");
       if (!string.IsNullOrWhiteSpace(fileToAnalyze))
       {
         WordCounter wordCounter = new WordCounter(new ComplexSplit());
@@ -198,14 +232,46 @@ namespace WordCounterGUI
       }
     }
 
+    private void OnCompareCommand()
+    {
+      string fileToAnalyze = this.openDialog.ChooseFile("File To Analyze");
+      if (!string.IsNullOrWhiteSpace(fileToAnalyze))
+      {
+        WordCounter wordCounter = new WordCounter(new ComplexSplit());
+        StreamReader reader = new StreamReader(fileToAnalyze);
+        this.resultsSourceFile = wordCounter.CountWordsOnStreamText(reader);
+        this.SourceFileResults = this.resultsSourceFile.ToString();
+      }
+
+      fileToAnalyze = this.openDialog.ChooseFile("File To Compare To");
+      if (!string.IsNullOrWhiteSpace(fileToAnalyze))
+      {
+        WordCounter wordCounter = new WordCounter(new ComplexSplit());
+        StreamReader reader = new StreamReader(fileToAnalyze);
+        this.resultsCompareFile = wordCounter.CountWordsOnStreamText(reader);
+        this.CompareFileResults = this.resultsCompareFile.ToString();
+      }
+    }
+
     private void OnSaveResultsCommand()
     {
-      SaveFileDialog dialog = new SaveFileDialog();
-      dialog.ShowDialog();
-      string saveFileName = dialog.FileName;
+      string saveFileName = this.saveDialog.ChooseFile("Save results", JsonExtension, JsonFilter);
       if (!string.IsNullOrWhiteSpace(saveFileName))
       {
         this.resultsSourceFile.SerializeToFile(saveFileName);
+      }
+    }
+
+    private void OnOpenResultsCommand()
+    {
+      string fileToAnalyze = this.openDialog.ChooseFile("Open Results", JsonExtension, JsonFilter);
+      if (!string.IsNullOrWhiteSpace(fileToAnalyze))
+      {
+        using (StreamReader reader = new StreamReader(fileToAnalyze))
+        {
+          this.resultsSourceFile = WordCounterInformation.DeSerializeFromReader(reader);
+          this.SourceFileResults = this.resultsSourceFile.ToString();
+        }
       }
     }
 

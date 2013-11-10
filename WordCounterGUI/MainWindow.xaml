@@ -14,13 +14,13 @@
                 <MenuItem Header="_Analyze File" Command="{Binding AnalyzeCommand}" InputGestureText="Ctrl+A"/>
                 <MenuItem Header="_Compare Files" Command="{Binding CompareCommand}"/>
                 <Separator/>
-                <MenuItem Header=" _Open Results" Command="{Binding OpenResults}" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="_Open Results" Command="{Binding OpenResults}" InputGestureText="Ctrl+O"/>
                 <MenuItem Header="_Save Results" Command="{Binding SaveResults}" InputGestureText="Ctrl+S"/>
                 <Separator/>
                 <MenuItem Header="E_xit" Command="{Binding ExitCommand}" InputGestureText="Alt+F4"/>
             </MenuItem>
         </Menu>
-        <Grid>
+        <Grid Name="GridDisplay">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Name="SourceFileColumn" Width="{Binding SourceFileColumnWidth}"></ColumnDefinition>
                 <ColumnDefinition Name="CompareFileColumn" Width="{Binding CompareFileColumnWidth}"></ColumnDefinition>
@@ -29,13 +29,17 @@
                 Name="SourceFile" 
                 Text="{Binding SourceFileResults}" 
                 Grid.Column="0" 
-                Visibility="{Binding SourceFileVisible}" 
-                Width="{Binding ElementName=SourceFileColumn, Path=Width}"/>
+                Visibility="{Binding SourceFileVisible}"
+                VerticalScrollBarVisibility="Auto"
+                Width="{Binding ElementName=SourceFileColumn, Path=Width}"
+                Height="{Binding ElementName=GridDisplay, Path=Height}"/>
             <TextBox 
                 Name="FileToCompare" 
                 Text="{Binding CompareFileResults}" 
                 Grid.Column="1" Visibility="{Binding CompareFileVisible}"
-                Width="{Binding ElementName=CompareFileColumn, Path=Width}"/>
+                VerticalScrollBarVisibility="Auto"
+                Width="{Binding ElementName=CompareFileColumn, Path=ActualWidth}"
+                Height="{Binding ElementName=GridDisplay, Path=Height}"/>
         </Grid>
     </StackPanel>
 </Window>
