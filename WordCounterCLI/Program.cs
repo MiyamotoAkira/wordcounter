@@ -26,10 +26,23 @@ namespace WordCounterCLI
     private static void ProcessWordCounter(LineArguments lineArguments)
     {
       WordCounterInformation results;
+      int? resultComparison = null;
       using (StreamReader reader = new StreamReader(lineArguments.SourceFile))
       {
-        WordCounterCore.WordCounter wordCounter = new WordCounter(new ComplexSplit());
+        WordCounter wordCounter = new WordCounter(new ComplexSplit());
         results = wordCounter.CountWordsOnStreamText(reader);
+      }
+
+      WordCounterInformation compareTo = null;
+      if (lineArguments.CompareTo)
+      {
+        using (StreamReader reader = new StreamReader(lineArguments.SourceFileToCompare))
+        {
+          WordCounter wordCounter = new WordCounter(new ComplexSplit());
+          compareTo = wordCounter.CountWordsOnStreamText(reader);
+
+          resultComparison = results.CompareTo(compareTo);
+        }
       }
 
       if (results != null)
@@ -41,6 +54,30 @@ namespace WordCounterCLI
         else
         {
           Console.WriteLine(results.ToString());
+        }
+      }
+
+      if (compareTo != null)
+      {
+        if (lineArguments.ThereIsFileOutputForCompare)
+        {
+          compareTo.SerializeToFile(lineArguments.DestinationPathForCompare);
+        }
+        else
+        {
+          Console.WriteLine(compareTo.ToString());
+        }
+      }
+
+      if (resultComparison.HasValue)
+      {
+        if (resultComparison.Value == 0)
+        {
+          Console.WriteLine("The files have the same words");
+        }
+        else
+        {
+          Console.WriteLine("The files are different");
         }
       }
     }
@@ -56,6 +93,8 @@ namespace WordCounterCLI
       Console.WriteLine("/compareto filetocompare compares the word count of filetocompare to the sourcefile");
       Console.WriteLine(String.Empty);
       Console.WriteLine("/output destinationpath saves the word count information to destinationpath instead of displaying on screen");
+      Console.WriteLine(String.Empty);
+      Console.WriteLine("/outputcompare destinationpath saves the word count information of the compare file to destinationpath instead of displaying on screen");
     }
   }
 }

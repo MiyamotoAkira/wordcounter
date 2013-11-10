@@ -27,9 +27,19 @@ namespace WordCounterCLI
     public bool ThereIsFileOutput { get; private set; }
 
     /// <summary>
-    /// Gets the path of the file where we want to output the results.
+    /// Gets the path of the file where we want to output the results of counting words on the source file.
     /// </summary>
     public string DestinationPath { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether we want to write the output for the compare file to a file or not.
+    /// </summary>
+    public bool ThereIsFileOutputForCompare { get; private set; }
+
+    /// <summary>
+    /// Gets the path of the file where we want to output the results of counting words on the compare file.
+    /// </summary>
+    public string DestinationPathForCompare { get; private set; }
     #endregion
 
     #region Methods
@@ -73,8 +83,8 @@ namespace WordCounterCLI
             this.SourceFileToCompare = arguments[nextArgument];
 
             break;
-          case "/destinationpath":
-            if (!CheckThereIsNextArgument(arguments, nextArgument))
+          case "/output":
+            if (!this.CheckThereIsNextArgument(arguments, nextArgument))
             {
               return false;
             }
@@ -86,6 +96,20 @@ namespace WordCounterCLI
 
             this.ThereIsFileOutput = true;
             this.DestinationPath = arguments[nextArgument];
+            break;
+          case "/outputcompare":
+            if (!this.CheckThereIsNextArgument(arguments, nextArgument))
+            {
+              return false;
+            }
+
+            if (this.CheckArgumentIsOption(arguments, nextArgument))
+            {
+              return false;
+            }
+
+            this.ThereIsFileOutputForCompare = true;
+            this.DestinationPathForCompare = arguments[nextArgument];
             break;
           default:
             return false;

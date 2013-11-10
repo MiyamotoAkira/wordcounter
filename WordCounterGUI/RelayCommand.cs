@@ -79,38 +79,12 @@ namespace WordCounterGUI
     {
       add
       {
-        if (this.canExecute != null)
-        {
-          EventHandler handler2;
-          EventHandler canExecuteChanged = this.LocalCanExecuteChanged;
-          do
-          {
-            handler2 = canExecuteChanged;
-            EventHandler handler3 = (EventHandler)Delegate.Combine(handler2, value);
-            canExecuteChanged = Interlocked.CompareExchange(ref this.LocalCanExecuteChanged, handler3, handler2);
-          }
-          while (canExecuteChanged != handler2);
-
-          CommandManager.RequerySuggested += value;
-        }
+        CommandManager.RequerySuggested += value;
       }
 
       remove
       {
-        if (this.canExecute != null)
-        {
-          EventHandler handler2;
-          EventHandler canExecuteChanged = this.LocalCanExecuteChanged;
-          do
-          {
-            handler2 = canExecuteChanged;
-            EventHandler handler3 = (EventHandler)Delegate.Remove(handler2, value);
-            canExecuteChanged = Interlocked.CompareExchange(ref this.LocalCanExecuteChanged, handler3, handler2);
-          }
-          while (canExecuteChanged != handler2);
-
-          CommandManager.RequerySuggested -= value;
-        }
+        CommandManager.RequerySuggested -= value;
       }
     }
 

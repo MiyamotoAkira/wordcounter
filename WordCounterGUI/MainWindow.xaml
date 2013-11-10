@@ -38,7 +38,7 @@
                 Text="{Binding CompareFileResults}" 
                 Grid.Column="1" Visibility="{Binding CompareFileVisible}"
                 VerticalScrollBarVisibility="Auto"
-                Width="{Binding ElementName=CompareFileColumn, Path=ActualWidth}"
+                Width="{Binding ElementName=CompareFileColumn, Path=Width}"
                 Height="{Binding ElementName=GridDisplay, Path=Height}"/>
         </Grid>
     </StackPanel>

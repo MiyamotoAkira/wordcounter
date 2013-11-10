@@ -46,12 +46,12 @@ namespace WordCounterGUI
     }
     #endregion
 
-    #region Events
-    public event PropertyChangedEventHandler PropertyChanged;
-    #endregion
-
     #region Delegate
     public delegate void UpdateFileResults(string textForUpdate);
+    #endregion
+
+    #region Events
+    public event PropertyChangedEventHandler PropertyChanged;
     #endregion
 
     #region Properties
@@ -100,7 +100,7 @@ namespace WordCounterGUI
       {
         if (this.saveResults == null)
         {
-          this.saveResults = new RelayCommand<String>(param => this.OnSaveResultsCommand());
+          this.saveResults = new RelayCommand<String>(param => this.OnSaveResultsCommand(), param => !string.IsNullOrWhiteSpace(this.SourceFileResults));
         }
 
         return this.saveResults;
@@ -240,14 +240,41 @@ namespace WordCounterGUI
 
       fileToAnalyze = this.openDialog.ChooseFile("File To Compare To");
       this.Create(fileToAnalyze, ref this.resultsCompareFile, (textToUpdate) => this.CompareFileResults = textToUpdate);
+
+      this.OutputCompareResults(this.resultsSourceFile.CompareTo(this.resultsCompareFile));
+    }
+
+    private void OutputCompareResults(int resultsOfComparison)
+    {
+      string message;
+      if (resultsOfComparison == 0)
+      {
+        message = "The files have the exact same words";
+      }
+      else
+      {
+        message = "The files have different words";
+      }
+
+      MessageBox.Show(message, "Comparison", MessageBoxButton.OK);
     }
 
     public void OnSaveResultsCommand()
     {
-      string saveFileName = this.saveDialog.ChooseFile("Save results", JsonExtension, JsonFilter);
+      this.SaveResultsToFile("Save results", this.resultsSourceFile);
+
+      if (this.resultsCompareFile != null)
+      {
+        this.SaveResultsToFile("Save results for compare file", this.resultsCompareFile);
+      }
+    }
+
+    private void SaveResultsToFile(string title, WordCounterInformation information)
+    {
+      string saveFileName = this.saveDialog.ChooseFile(title, JsonExtension, JsonFilter);
       if (!string.IsNullOrWhiteSpace(saveFileName))
       {
-        this.resultsSourceFile.SerializeToFile(saveFileName);
+        information.SerializeToFile(saveFileName);
       }
     }
 
